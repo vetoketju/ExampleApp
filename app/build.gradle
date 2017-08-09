@@ -1,0 +1,51 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion "26.0.0"
+    defaultConfig {
+        applicationId "com.villevalta.exampleapp"
+        minSdkVersion 16
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+        multiDexEnabled true // 65k metodin raja tulee nopeasti täyteen kirjastojen kanssa. Multidex päälle
+        /* Multidexin jälkeen Class not found exceptioneihin:
+        * (./gradlew cleanBuildCache)
+        * ./gradlew clean
+        * ./gradlew assembleDebug
+        * adb install -r app/build/outputs/apk/app-debug.apk
+        * */
+    }
+
+    // Otetaan databinding käyttöön
+    dataBinding {
+        enabled = true
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+// Ulkoiset muuttujat
+ext {
+    supportVersion = '26.0.0'
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    compile "com.android.support:design:$supportVersion"
+    compile "com.android.support:appcompat-v7:$supportVersion"
+    compile "com.android.support:support-v4:$supportVersion"
+
+    compile "com.android.support:recyclerview-v7:$supportVersion"
+    compile "com.android.support:cardview-v7:$supportVersion"
+
+    compile 'com.android.support:multidex:1.0.1'
+    compile 'com.android.support.constraint:constraint-layout:1.0.2'
+}
