@@ -10,6 +10,7 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
@@ -41,6 +42,10 @@ public class ImgurApiService {
                 .readTimeout(1, TimeUnit.MINUTES)
                 .writeTimeout(1, TimeUnit.MINUTES)
                 .build();
+
+        if(BuildConfig.DEBUG){
+            //httpClient = httpClient.newBuilder().addNetworkInterceptor(new HttpLoggingInterceptor(HttpLoggingInterceptor.Logger.DEFAULT)).build();
+        }
 
         service = new Retrofit.Builder()
                 .baseUrl(IMGUR_API_BASE_URL)
