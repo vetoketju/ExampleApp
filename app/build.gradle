@@ -9,7 +9,8 @@ android {
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
-        multiDexEnabled true // 65k metodin raja tulee nopeasti täyteen kirjastojen kanssa. Multidex päälle
+        multiDexEnabled true
+        // 65k metodin raja tulee nopeasti täyteen kirjastojen kanssa. Multidex päälle
         /* Multidexin jälkeen Class not found exceptioneihin:
         * (./gradlew cleanBuildCache)
         * ./gradlew clean
@@ -23,7 +24,17 @@ android {
         enabled = true
     }
 
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
+    }
+
     buildTypes {
+
+        all {
+            buildConfigField('String', "IMGUR_CLIENT_ID", '"cae76f281641831"')
+        }
+
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
@@ -38,6 +49,11 @@ ext {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    compile 'com.squareup.okhttp3:okhttp:3.8.1'
+    compile 'com.squareup.retrofit2:retrofit:2.3.0'
+    compile 'com.squareup.retrofit2:converter-jackson:2.3.0'
+    compile 'com.fasterxml.jackson.core:jackson-core:2.9.0'
 
     compile "com.android.support:design:$supportVersion"
     compile "com.android.support:appcompat-v7:$supportVersion"
