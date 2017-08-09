@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<Page> call, Response<Page> response) {
 
-                if (response.body().isSuccess()) {
+                if (response != null && response.body().isSuccess()) {
                     for (Image image : response.body().getData()) {
                         Log.d(TAG, "image: " + image.getTitle());
                     }
