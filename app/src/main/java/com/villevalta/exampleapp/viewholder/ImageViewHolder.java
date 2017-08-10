@@ -1,9 +1,6 @@
 package com.villevalta.exampleapp.viewholder;
 
-import android.view.View;
-import android.widget.TextView;
-
-import com.villevalta.exampleapp.R;
+import com.villevalta.exampleapp.databinding.ListItemImageBinding;
 import com.villevalta.exampleapp.model.Image;
 
 /**
@@ -12,15 +9,15 @@ import com.villevalta.exampleapp.model.Image;
 
 public class ImageViewHolder extends AViewHolder<Image> {
 
-    TextView title;
+    ListItemImageBinding binding;
 
-    public ImageViewHolder(View itemView) {
-        super(itemView);
-        title = (TextView) itemView.findViewById(R.id.title);
+    public ImageViewHolder(ListItemImageBinding binding) {
+        super(binding.getRoot());
+        this.binding = binding;
     }
 
     @Override
     public void bind(Image object) {
-        title.setText(object.getTitle());
+        binding.setItem(object);
     }
 }

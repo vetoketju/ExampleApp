@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.villevalta.exampleapp.R;
+import com.villevalta.exampleapp.databinding.ListItemImageBinding;
 import com.villevalta.exampleapp.model.Images;
 import com.villevalta.exampleapp.viewholder.AViewHolder;
 import com.villevalta.exampleapp.viewholder.ImageViewHolder;
@@ -40,8 +41,8 @@ public class ImagesAdapter extends RecyclerView.Adapter<AViewHolder> implements 
             View view = inflater.inflate(R.layout.list_item_loading, parent, false);
             return new LoadingViewHolder(view);
         } else if (viewType == TYPE_IMAGE) {
-            View view = inflater.inflate(R.layout.list_item_image, parent, false);
-            return new ImageViewHolder(view);
+            ListItemImageBinding binding = ListItemImageBinding.inflate(inflater, parent, false);
+            return new ImageViewHolder(binding);
         } else {
             throw new IllegalArgumentException("viewType is not supported!");
         }
