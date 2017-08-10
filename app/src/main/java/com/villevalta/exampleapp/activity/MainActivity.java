@@ -3,7 +3,7 @@ package com.villevalta.exampleapp.activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.Toast;
+import android.view.View;
 
 import com.villevalta.exampleapp.ExampleApplication;
 import com.villevalta.exampleapp.R;
@@ -32,12 +32,23 @@ public class MainActivity extends AppCompatActivity {
     private Realm realm;
 
     private boolean loading = false;
+    private Call<Page> pageCall;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         apiService = ExampleApplication.getInstance().getImgurApiService();
+
+        findViewById(R.id.clear_db).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                realm.beginTransaction();
+                images.reset();
+                realm.commitTransaction();
+            }
+        });
+
     }
 
     @Override
@@ -52,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
         images = realm.where(Images.class).contains("id", subreddit + sort).findFirst();
 
         // Jos ei löytynyt, lisätään se sinne
-        if(images == null){
+        if (images == null) {
             images = new Images();
             images.setId(subreddit + sort);
 
@@ -64,9 +75,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Ensimmäinen sivuhaku, jos sivuja ei ole vielä haettu
-        if(images.getPagesLoaded() == 0){
+        if (images.getPagesLoaded() < 3) {
             loadPage();
-        }else{
+        } else {
             Log.d(TAG, "Images loaded from database: ");
             for (Image image : images.getImages()) {
                 Log.d(TAG, "image: " + image.getTitle());
@@ -77,19 +88,26 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        // TODO: Cancel http request here
-        if(realm != null && !realm.isClosed()){
+
+        cancelRequest();
+
+        if (realm != null && !realm.isClosed()) {
             realm.close(); // Suljetaan realm
         }
         super.onPause();
     }
 
-    private void loadPage(){
+    private void cancelRequest() {
+        if (pageCall != null && !pageCall.isCanceled()) {
+            pageCall.cancel();
+        }
+    }
 
+    private void loadPage() {
         int page = images.getPagesLoaded();
-
         loading = true;
-        apiService.getImagesPage(subreddit, sort, page).enqueue(new Callback<Page>() {
+        pageCall = apiService.getImagesPage(subreddit, sort, page);
+        pageCall.enqueue(new Callback<Page>() {
             @Override
             public void onResponse(Call<Page> call, Response<Page> response) {
                 if (response != null && response.body().isSuccess()) {
@@ -101,6 +119,9 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "Images loaded from web: ");
                     for (Image image : images.getImages()) {
                         Log.d(TAG, "image: " + image.getTitle());
+                    }
+                    if(images.getPagesLoaded() < 3){
+                        loadPage();
                     }
                 }else{
                     Log.e(TAG, "onResponse: NO SUCCESS :(" );
@@ -114,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.e(TAG, "onFailure:", t);
             }
         });
+
     }
 
 }

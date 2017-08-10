@@ -30,6 +30,12 @@ public class Images extends RealmObject {
         }
     }
 
+    public void reset() {
+        pagesLoaded = 0;
+        lastUpdated = 0;
+        images.clear();
+    }
+
     /* Setterit ja Getterit */
 
     public String getId() {
