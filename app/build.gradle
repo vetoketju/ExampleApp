@@ -60,6 +60,8 @@ dependencies {
     // retrofit + realm tarvitsee rxJavan. rxJava on hyvä, mutta ei kuulu kurssiin
     // https://realm.io/docs/java/latest/#jackson-databind
 
+    compile 'com.squareup.picasso:picasso:2.5.2' // https://bintray.com/bintray/jcenter/com.squareup.picasso:picasso
+
     compile "com.android.support:design:$supportVersion"
     compile "com.android.support:appcompat-v7:$supportVersion"
     compile "com.android.support:support-v4:$supportVersion"
