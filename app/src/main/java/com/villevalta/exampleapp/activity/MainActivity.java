@@ -3,7 +3,6 @@ package com.villevalta.exampleapp.activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
@@ -14,6 +13,7 @@ import com.villevalta.exampleapp.model.Image;
 import com.villevalta.exampleapp.model.Images;
 import com.villevalta.exampleapp.model.Page;
 import com.villevalta.exampleapp.network.service.ImgurApiService;
+import com.villevalta.exampleapp.view.PaginatingRecyclerView;
 
 import java.util.Date;
 
@@ -22,7 +22,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements PaginatingRecyclerView.LoadMoreListener {
 
     public static final String TAG = "MainActivity";
     ImgurApiService apiService;
@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean loading = false;
     private Call<Page> pageCall;
 
-    private RecyclerView recycler;
+    private PaginatingRecyclerView recycler;
     private ImagesAdapter adapter;
 
     @Override
@@ -55,8 +55,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        recycler = (RecyclerView) findViewById(R.id.recycler);
+        recycler = (PaginatingRecyclerView) findViewById(R.id.recycler);
         recycler.setLayoutManager(new LinearLayoutManager(this));
+        recycler.setLoadMoreListener(this);
+        recycler.setPageLoadTriggerLimit(6);
         adapter = new ImagesAdapter();
         recycler.setAdapter(adapter);
     }
@@ -87,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
         adapter.initialize(images);
 
         // Ensimmäinen sivuhaku, jos sivuja ei ole vielä haettu
-        if (images.getPagesLoaded() < 3) {
+        if (images.getPagesLoaded() == 0) {
             loadPage();
         } else {
             Log.d(TAG, "Images loaded from database: ");
@@ -143,9 +145,6 @@ public class MainActivity extends AppCompatActivity {
                     for (Image image : images.getImages()) {
                         Log.d(TAG, "image: " + image.getTitle());
                     }
-                    if(images.getPagesLoaded() < 3){
-                        loadPage();
-                    }
                 }else{
                     Log.e(TAG, "onResponse: NO SUCCESS :(" );
                 }
@@ -161,4 +160,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void shouldLoadMore() {
+        if(!loading){
+            loadPage();
+        }
+    }
 }
