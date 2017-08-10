@@ -2,11 +2,14 @@ package com.villevalta.exampleapp.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 
 import com.villevalta.exampleapp.ExampleApplication;
 import com.villevalta.exampleapp.R;
+import com.villevalta.exampleapp.adapter.ImagesAdapter;
 import com.villevalta.exampleapp.model.Image;
 import com.villevalta.exampleapp.model.Images;
 import com.villevalta.exampleapp.model.Page;
@@ -34,6 +37,9 @@ public class MainActivity extends AppCompatActivity {
     private boolean loading = false;
     private Call<Page> pageCall;
 
+    private RecyclerView recycler;
+    private ImagesAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +55,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        recycler = (RecyclerView) findViewById(R.id.recycler);
+        recycler.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new ImagesAdapter();
+        recycler.setAdapter(adapter);
     }
 
     @Override
@@ -74,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
             realm.commitTransaction();
         }
 
+        adapter.initialize(images);
+
         // Ensimmäinen sivuhaku, jos sivuja ei ole vielä haettu
         if (images.getPagesLoaded() < 3) {
             loadPage();
@@ -89,6 +101,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
 
+        if(images != null){
+            images.removeAllChangeListeners();
+        }
+
         cancelRequest();
 
         if (realm != null && !realm.isClosed()) {
@@ -103,9 +119,16 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void setIsLoading(boolean loading){
+        this.loading = loading;
+        if(adapter != null){
+            adapter.setShowLoading(loading);
+        }
+    }
+
     private void loadPage() {
         int page = images.getPagesLoaded();
-        loading = true;
+        setIsLoading(true);
         pageCall = apiService.getImagesPage(subreddit, sort, page);
         pageCall.enqueue(new Callback<Page>() {
             @Override
@@ -126,12 +149,12 @@ public class MainActivity extends AppCompatActivity {
                 }else{
                     Log.e(TAG, "onResponse: NO SUCCESS :(" );
                 }
-                loading = false;
+                setIsLoading(false);
             }
 
             @Override
             public void onFailure(Call<Page> call, Throwable t) {
-                loading = false;
+                setIsLoading(false);
                 Log.e(TAG, "onFailure:", t);
             }
         });
