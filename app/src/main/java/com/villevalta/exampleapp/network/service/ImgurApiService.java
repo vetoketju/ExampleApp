@@ -43,10 +43,6 @@ public class ImgurApiService {
                 .writeTimeout(1, TimeUnit.MINUTES)
                 .build();
 
-        if(BuildConfig.DEBUG){
-            //httpClient = httpClient.newBuilder().addNetworkInterceptor(new HttpLoggingInterceptor(HttpLoggingInterceptor.Logger.DEFAULT)).build();
-        }
-
         service = new Retrofit.Builder()
                 .baseUrl(IMGUR_API_BASE_URL)
                 .client(httpClient)
