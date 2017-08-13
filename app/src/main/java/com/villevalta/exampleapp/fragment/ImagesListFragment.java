@@ -37,8 +37,8 @@ public class ImagesListFragment extends Fragment implements PaginatingRecyclerVi
     public static final String ARG_SUBREDDIT = "sub";
     public static final String ARG_SORT = "sort";
 
-    private String subreddit = "funny";
-    private String sort = "hot";
+    private String subreddit;
+    private String sort;
 
     ImgurApiService apiService;
 
@@ -176,7 +176,7 @@ public class ImagesListFragment extends Fragment implements PaginatingRecyclerVi
                     realm.commitTransaction();
                     Log.d(TAG, "Images loaded from web: ");
                     for (Image image : images.getImages()) {
-                        Log.d(TAG, "image: " + image.getTitle());
+                        Log.d(TAG, "image: " + image.getId() + " - " + image.getTitle());
                     }
                 } else {
                     Log.e(TAG, "onResponse: NO SUCCESS :(");

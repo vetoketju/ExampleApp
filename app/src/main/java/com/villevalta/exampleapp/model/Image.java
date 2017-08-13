@@ -17,6 +17,9 @@ public class Image extends RealmObject {
     private String title;
     private String description;
     private String link;
+    private int views;
+    private String type;
+    private String section;
 
     public String getId() {
         return id;
@@ -48,5 +51,29 @@ public class Image extends RealmObject {
 
     public void setLink(String link) {
         this.link = link;
+    }
+
+    public int getViews() {
+        return views;
+    }
+
+    public void setViews(int views) {
+        this.views = views;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getSection() {
+        return section;
+    }
+
+    public void setSection(String section) {
+        this.section = section;
     }
 }

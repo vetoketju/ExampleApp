@@ -1,5 +1,9 @@
 package com.villevalta.exampleapp.viewholder;
 
+import android.content.Intent;
+import android.view.View;
+
+import com.villevalta.exampleapp.activity.ImageActivity;
 import com.villevalta.exampleapp.databinding.ListItemImageBinding;
 import com.villevalta.exampleapp.model.Image;
 
@@ -17,7 +21,15 @@ public class ImageViewHolder extends AViewHolder<Image> {
     }
 
     @Override
-    public void bind(Image object) {
+    public void bind(final Image object) {
         binding.setItem(object);
+        binding.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(v.getContext(), ImageActivity.class);
+                i.putExtra(ImageActivity.KEY_EXTRA_ID, object.getId());
+                v.getContext().startActivity(i);
+            }
+        });
     }
 }
