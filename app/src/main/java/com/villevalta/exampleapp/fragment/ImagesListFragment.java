@@ -3,6 +3,7 @@ package com.villevalta.exampleapp.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,7 +30,7 @@ import retrofit2.Response;
  * Created by villevalta on 8/13/17.
  */
 
-public class ImagesListFragment extends Fragment implements PaginatingRecyclerView.LoadMoreListener {
+public class ImagesListFragment extends Fragment implements PaginatingRecyclerView.LoadMoreListener, SwipeRefreshLayout.OnRefreshListener {
 
     private static final String TAG = "ImagesListFragment";
 
@@ -50,6 +51,7 @@ public class ImagesListFragment extends Fragment implements PaginatingRecyclerVi
 
     private PaginatingRecyclerView recycler;
     private ImagesAdapter adapter;
+    private SwipeRefreshLayout swiper;
 
     // Fragmentilla pitää olla tyhjä konstruktori
     public ImagesListFragment() {
@@ -97,6 +99,10 @@ public class ImagesListFragment extends Fragment implements PaginatingRecyclerVi
             realm.commitTransaction();
         }
 
+        // Jos tietokannassa on yli minuutin vanhaa tavaraa, tehdään tyhjennys:
+        if(images.getLastUpdated() != 0 && images.getLastUpdated() < (new Date().getTime() - (60 * 1000))) { // nyt - 60 sekunttia
+            clearDB();
+        }
         adapter.initialize(images);
 
         // Ensimmäinen sivuhaku, jos sivuja ei ole vielä haettu
@@ -113,14 +119,8 @@ public class ImagesListFragment extends Fragment implements PaginatingRecyclerVi
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_list, container, false);
 
-        root.findViewById(R.id.clear_db).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                realm.beginTransaction();
-                images.reset();
-                realm.commitTransaction();
-            }
-        });
+        swiper = (SwipeRefreshLayout) root.findViewById(R.id.swiper);
+        swiper.setOnRefreshListener(this);
 
         recycler = (PaginatingRecyclerView) root.findViewById(R.id.recycler);
         recycler.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -200,4 +200,17 @@ public class ImagesListFragment extends Fragment implements PaginatingRecyclerVi
         }
     }
 
+    private void clearDB(){
+        if(realm != null && !realm.isClosed() && images.isValid()){
+            realm.beginTransaction();
+            images.reset();
+            realm.commitTransaction();
+        }
+    }
+
+    @Override
+    public void onRefresh() {
+        swiper.setRefreshing(false);
+        clearDB();
+    }
 }
