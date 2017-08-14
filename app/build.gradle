@@ -33,6 +33,7 @@ android {
 
         all {
             buildConfigField('String', "IMGUR_CLIENT_ID", '"cae76f281641831"')
+            buildConfigField('String', "BASE_URL", '"https://api.imgur.com/3/"')
         }
 
         release {
