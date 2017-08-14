@@ -26,6 +26,9 @@ public class ImgurApiService {
     OkHttpClient httpClient;
     ImgurApiServiceInterface service;
 
+
+
+
     public ImgurApiService() {
 
         // Luodaan OkHttpClient instanssi. Imgur tapauksessa jokaiseen http kutsuun pitää lisätä authorization header. Sitä varten tehdään Interceptor, joka laittaa sen jokaiseen kutsuun.
@@ -43,7 +46,7 @@ public class ImgurApiService {
                 .writeTimeout(1, TimeUnit.MINUTES)
                 .build();
 
-        if (BuildConfig.DEBUG) {
+        if(BuildConfig.DEBUG){
             HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor();
             loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
             httpClient = httpClient.newBuilder().addInterceptor(loggingInterceptor).build();
