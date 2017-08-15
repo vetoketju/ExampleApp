@@ -20,8 +20,13 @@ public class ExampleApplication extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
         singleton = this;
+
+        // Realm initialisointi
         Realm.init(this);
-        Realm.setDefaultConfiguration(new RealmConfiguration.Builder().deleteRealmIfMigrationNeeded().build());
+        RealmConfiguration realmConfiguration = new RealmConfiguration.Builder().deleteRealmIfMigrationNeeded().build();
+        Realm.setDefaultConfiguration(realmConfiguration);
+
+
         imgurApiService = new ImgurApiService();
     }
 
